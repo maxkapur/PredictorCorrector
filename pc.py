@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.linalg import solve_triangular
 
 def pc_minimize(c, A, b, tol=1e-9, maxit=500):
     m, n = A.shape
@@ -35,7 +36,7 @@ def pc_minimize(c, A, b, tol=1e-9, maxit=500):
         
         # Predictor step
         right_aff = np.hstack([-r_c, -r_b, -x * s])
-        out = np.linalg.solve(R, Q.T @ right_aff)
+        out = solve_triangular(R, Q.T @ right_aff)
         Δx_aff = out[:n]
         Δλ_aff = out[n:(n + m)]
         Δs_aff = out[(n + m):]
@@ -48,7 +49,7 @@ def pc_minimize(c, A, b, tol=1e-9, maxit=500):
 
         # Compute step dirs
         right = np.hstack([-r_c, -r_b, -x * s - Δx_aff * Δs_aff + σ * μ * np.ones(n)])
-        out = np.linalg.solve(R, Q.T @ right)
+        out = solve_triangular(R, Q.T @ right)
         Δx = out[:n]
         Δλ = out[n:(n + m)]
         Δs = out[(n+m):]
